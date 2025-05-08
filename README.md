@@ -9,26 +9,6 @@ TechStore is a Java  demo showcasing twelve design patterns through functionalit
 
 TechStore est une application console Java simplifiée qui simule une boutique en ligne de produits technologiques. Son objectif principal est de démontrer l'application pratique de **douze design patterns fondamentaux** dans un contexte orienté objet.
 
-## Table des Matières
-
-- [Introduction](#introduction)
-- [Fonctionnalités](#fonctionnalités)
-  - [Client](#client)
-  - [Administrateur](#administrateur)
-- [Design Patterns Implémentés](#design-patterns-implémentés)
-- [Architecture](#architecture)
-- [Prérequis](#prérequis)
-- [Installation et Exécution](#installation-et-exécution)
-  - [Compilation](#compilation)
-  - [Exécution](#exécution)
-- [Guide d'Utilisation](#guide-dutilisation)
-- [Structure du Projet](#structure-du-projet)
-- [Diagramme de Classes](#diagramme-de-classes)
-- [Limitations](#limitations)
-- [Améliorations Futures](#améliorations-futures)
-- [Contribution](#contribution)
-- [Licence](#licence)
-
 ## Introduction
 
 Ce projet sert d'exemple pratique pour les développeurs et étudiants souhaitant comprendre comment structurer une application en utilisant des principes de conception solides et des design patterns reconnus. L'application permet aux clients de parcourir des produits, de gérer un panier et de passer des commandes, tandis que les administrateurs peuvent gérer le catalogue de produits, les catégories, les utilisateurs et les commandes.
