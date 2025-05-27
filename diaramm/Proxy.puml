@@ -1,0 +1,92 @@
+@startuml CatalogueServiceProxyPattern
+
+skinparam class {
+    BackgroundColor<<Interface>> LightBlue
+    BackgroundColor<<Proxy>> LightGreen
+    BackgroundColor<<Service>> LightYellow
+    BackgroundColor<<Singleton>> LightPink
+}
+
+interface CatalogueService <<Interface>> {
+    + addProduct(Product)
+    + updateProduct(Product)
+    + deleteProduct(int)
+    + getNextProductId(): int
+    + findProductById(int): Optional<Product>
+    + getAllProducts(): List<Product>
+    + findProductsByCategory(Category): List<Product>
+    + addCategory(Category)
+    + findCategoryByName(String): Optional<Category>
+    + findCategoryById(int): Optional<Category>
+    + getAllCategories(): List<Category>
+}
+
+class CatalogueServiceProxy <<Proxy>> {
+    - realCatalogueService: CatalogueManager
+    - currentUser: User
+    + CatalogueServiceProxy(User)
+    - isAdmin(): boolean
+    + addProduct(Product)
+    + updateProduct(Product)
+    + deleteProduct(int)
+    + getNextProductId(): int
+    + findProductById(int): Optional<Product>
+    + getAllProducts(): List<Product>
+    + findProductsByCategory(Category): List<Product>
+    + addCategory(Category)
+    + findCategoryByName(String): Optional<Category>
+    + findCategoryById(int): Optional<Category>
+    + getAllCategories(): List<Category>
+}
+
+class CatalogueManager <<Service, Singleton>> {
+    - instance: CatalogueManager
+    + getInstance(): CatalogueManager
+    + addProduct(Product)
+    + updateProduct(Product)
+    + deleteProduct(int)
+    + getNextProductId(): int
+    + findProductById(int): Optional<Product>
+    + getAllProducts(): List<Product>
+    + findProductsByCategory(Category): List<Product>
+    + addCategory(Category)
+    + findCategoryByName(String): Optional<Category>
+    + findCategoryById(int): Optional<Category>
+    + getAllCategories(): List<Category>
+}
+
+class User {
+    <<Abstract>>
+}
+
+class Admin {
+}
+
+CatalogueService <|.. CatalogueServiceProxy
+CatalogueService <|.. CatalogueManager
+
+CatalogueServiceProxy --> CatalogueManager : delegates to
+CatalogueServiceProxy --> User : checks
+Admin --|> User
+
+note top of CatalogueService
+  <<interface>>
+  Defines all catalog operations(both read and write)
+end note
+
+note left of CatalogueServiceProxy
+  <<Protection Proxy>>
+  • Controls access to real service
+  • Allows reads for all users
+  • Restricts writes to admins
+  • Implements same interface  as real service
+end note
+
+note right of CatalogueManager
+  <<Real Subject, Singleton>>
+  • Implements actual business logic
+  • Single instance for entire app
+  • Proxy forwards requests here
+end note
+
+@enduml

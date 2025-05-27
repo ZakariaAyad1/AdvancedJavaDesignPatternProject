@@ -1,0 +1,110 @@
+@startuml TechStoreMetaPattern
+
+skinparam class {
+    BackgroundColor<<Manager>> LightBlue
+    BackgroundColor<<Pattern>> LightGreen
+    BackgroundColor<<Structural>> LightYellow
+    BackgroundColor<<Behavioral>> LightPink
+}
+
+' ===== CORE SINGLETONS =====
+class CatalogueManager <<Manager, Singleton>> {
+    + getInstance(): CatalogueManager
+    + addProduct(Product)
+    + getProducts(): List<Product>
+    -- Proxy Pattern --
+    + CatalogueServiceProxy
+}
+
+class OrderManager <<Manager, Singleton, Observer>> {
+    + getInstance(): OrderManager
+    + placeOrder(Order)
+    -- Observer Pattern --
+    + NotificationService
+}
+
+class UserManager <<Manager, Singleton, Observer>> {
+    + getInstance(): UserManager
+    + addUser(User)
+    -- Observer Pattern --
+    + NotificationService
+}
+
+' ===== STRUCTURAL PATTERNS =====
+class CatalogueServiceProxy <<Proxy>> {
+    + checkAccess(User)
+    + delegateToRealService()
+}
+
+class ProductDecorator <<Decorator>> {
+    + addGiftWrap()
+    + addWarranty()
+}
+
+class ExternalPaymentGateway <<Adapter>> {
+    + adaptPayPal()
+    + adaptCreditCard()
+}
+
+' ===== CREATIONAL PATTERNS =====
+class ProductBuilder <<Builder>> {
+    + setName()
+    + setPrice()
+    + build()
+}
+
+class UserFactory <<Factory>> {
+    + createAdmin()
+    + createClient()
+}
+
+' ===== BEHAVIORAL PATTERNS =====
+class OrderProcessingTemplate <<Template Method>> {
+    + {final} processOrder()
+    # {abstract} updateInventory()
+    # {abstract} notifyClient()
+}
+
+class PaymentStrategy <<Strategy>> {
+    + pay()
+    + PayPalStrategy
+    + CreditCardStrategy
+}
+
+class AddProductCommand <<Command>> {
+    + execute()
+    + undo()
+}
+
+' ===== RELATIONSHIPS =====
+CatalogueManager --> CatalogueServiceProxy : protects
+OrderManager --> NotificationService : notifies
+UserManager --> NotificationService : notifies
+
+CatalogueManager --> ProductBuilder : creates
+UserManager --> UserFactory : creates
+
+OrderManager --> OrderProcessingTemplate : uses
+OrderProcessingTemplate --> PaymentStrategy : delegates
+
+ProductBuilder ..> ProductDecorator : can decorate
+ExternalPaymentGateway <|.. PaymentStrategy : adapts
+
+CatalogueManager --> AddProductCommand : executes
+
+' ===== LEGEND =====
+note top
+  **Pattern Integration**
+  Singleton: Core managers
+  Observer: Notifications
+  Proxy: Access control
+  Strategy: Payments
+  Template Method: Order processing
+  Builder: Product creation
+  Adapter: Payment gateways
+  Decorator: Product options
+  Command: Operations
+  Factory: User creation
+end note
+
+@enduml

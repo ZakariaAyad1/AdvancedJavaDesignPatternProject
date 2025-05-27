@@ -1,5 +1,5 @@
 package techstore.patterns.strategy;
 
 public interface PaymentStrategy {
-    void pay(double amount);
+    boolean pay(double amount); // Changed to return boolean indicating success/failure
 }

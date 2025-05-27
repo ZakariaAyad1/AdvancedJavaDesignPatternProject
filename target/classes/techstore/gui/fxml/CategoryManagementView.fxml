@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.CategoryManagementController"
+      spacing="10.0" prefHeight="400.0" prefWidth="300.0">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <Label text="Category Management" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+    <ListView fx:id="categoryListView" VBox.vgrow="ALWAYS" />
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <TextField fx:id="categoryNameField" promptText="New category name" HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleAddCategory" text="Add Category" />
+    </HBox>
+    <Button onAction="#handleDeleteCategory" text="Delete Selected Category" maxWidth="Infinity"/>
+</VBox>

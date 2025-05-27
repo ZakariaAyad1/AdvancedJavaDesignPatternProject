@@ -1,0 +1,56 @@
+@startuml ProductBuilderPattern
+
+skinparam class {
+    BackgroundColor<<Builder>> LightBlue
+    BackgroundColor<<Product>> LightGreen
+}
+
+class Product <<Product>> {
+    - id: int
+    - name: String
+    - price: double
+    - description: String
+    - category: Category
+    - brand: String
+    - warrantyMonths: int
+    - discount: double
+    + Product(id: int, name: String, description: String, price: double, category: Category, brand: String, warrantyMonths: int, discount: double)
+}
+
+class ProductBuilder <<Builder>> {
+    - id: int
+    - name: String
+    - price: double
+    - description: String
+    - category: Category
+    - brand: String
+    - warrantyMonths: int
+    - discount: double
+    + ProductBuilder(id: int, name: String, price: double)
+    + description(description: String): ProductBuilder
+    + category(category: Category): ProductBuilder
+    + brand(brand: String): ProductBuilder
+    + warrantyMonths(warrantyMonths: int): ProductBuilder
+    + discount(discount: double): ProductBuilder
+    + build(): Product
+}
+
+ProductBuilder ..> Product : creates
+
+note top of ProductBuilder
+  <<Builder>>
+  • Mandatory fields in constructor
+  • Optional fields with defaults
+  • Fluent interface methods
+  • Validates discount (0-1.0)
+  • build() creates immutable Product
+end note
+
+note right of Product
+  <<Product>>
+  • Complex object with many fields
+  • Constructor is typically private
+  • Immutable once created
+end note
+
+@enduml

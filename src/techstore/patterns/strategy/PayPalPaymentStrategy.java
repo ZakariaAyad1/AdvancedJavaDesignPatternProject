@@ -17,8 +17,10 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
     }
 
     @Override
-    public void pay(double amount) {
-        System.out.println("Attempting to pay $" + String.format("%.2f", amount) + " using PayPal.");
-        paymentGateway.processPayment(amount); // Using the adapter
+    public boolean pay(double amount) {
+        // Simulate PayPal payment
+        System.out.println("Processing PayPal payment for $" + amount);
+        // Add payment logic here
+        return true; // Return true for successful payment
     }
 }

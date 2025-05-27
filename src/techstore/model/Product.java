@@ -43,6 +43,7 @@ public class Product implements ProductComponent { // Will implement ProductComp
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
     public String getBrand() { return brand; }
+    public void setBrand(String brand) { this.brand = brand; }
     public int getWarrantyMonths() { return warrantyMonths; }
     public double getDiscount() { return discount; }
 

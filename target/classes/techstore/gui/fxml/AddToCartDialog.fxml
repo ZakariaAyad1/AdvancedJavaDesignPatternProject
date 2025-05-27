@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.AddToCartDialogController"
+      spacing="10" alignment="CENTER" prefWidth="300">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <Label text="Product Details:" style="-fx-font-weight: bold"/>
+    <Label fx:id="productNameLabel"/>
+    <Label fx:id="priceLabel"/>
+    
+    <Label text="Quantity:"/>
+    <Spinner fx:id="quantitySpinner" min="1" max="100" initialValue="1"/>
+    
+    <VBox spacing="5">
+        <CheckBox fx:id="giftWrapCheckBox" text="Add Gift Wrapping"/>
+        
+        <CheckBox fx:id="warrantyCheckBox" text="Add Extended Warranty"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Warranty Years:"/>
+            <Spinner fx:id="warrantyYearsSpinner" min="1" max="5" initialValue="1"/>
+        </HBox>
+    </VBox>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancel" onAction="#handleCancel"/>
+        <Button text="Add to Cart" onAction="#handleOk" defaultButton="true"/>
+    </HBox>
+</VBox>

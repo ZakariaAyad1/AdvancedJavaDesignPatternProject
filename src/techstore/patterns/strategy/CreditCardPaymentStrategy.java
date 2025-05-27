@@ -20,8 +20,10 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
     }
 
     @Override
-    public void pay(double amount) {
-        System.out.println("Attempting to pay $" + String.format("%.2f", amount) + " using Credit Card.");
-        paymentGateway.processPayment(amount); // Using the adapter
+    public boolean pay(double amount) {
+        // Simulate credit card payment
+        System.out.println("Processing credit card payment for $" + amount);
+        // Add payment logic here
+        return true; // Return true for successful payment
     }
 }

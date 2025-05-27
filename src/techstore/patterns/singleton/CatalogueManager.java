@@ -45,16 +45,13 @@ public class CatalogueManager implements CatalogueService { // Implements interf
 
     @Override
     public void updateProduct(Product product) {
-        Optional<Product> existingProductOpt = findProductById(product.getId());
-        if (existingProductOpt.isPresent()) {
-            products.remove(existingProductOpt.get());
-            products.add(product);
-            System.out.println("Product updated in RealCatalogueService: " + product.getName());
-        } else {
-            System.out.println("Product with ID " + product.getId() + " not found for update.");
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId() == product.getId()) {
+                products.set(i, product); // Replace the old product with the updated one
+                break;
+            }
         }
     }
-
 
     @Override
     public void deleteProduct(int productId) {
@@ -94,5 +91,25 @@ public class CatalogueManager implements CatalogueService { // Implements interf
 
     public List<Category> getAllCategories() {
         return new ArrayList<>(categories);
+    }
+
+    @Override
+    public void removeProduct(int productId) {
+        products.removeIf(product -> product.getId() == productId);
+    }
+
+    @Override
+    public boolean isCategoryInUse(Category category) {
+        return products.stream()
+                .anyMatch(product -> product.getCategory() != null && 
+                         product.getCategory().getId() == category.getId());
+    }
+
+    @Override
+    public void removeCategory(Category category) {
+        if (isCategoryInUse(category)) {
+            throw new IllegalStateException("Cannot delete category that is in use by products");
+        }
+        categories.removeIf(c -> c.getId() == category.getId());
     }
 }

@@ -34,6 +34,20 @@ public class OrderManager {
         }
     }
 
+    public void updateOrder(Order order) {
+        System.out.println("Updating order #" + order.getId() + " to status: " + order.getStatus()); // Debug line
+        for (Order o : orders) {
+            if (o.getId() == order.getId()) {
+                o.setStatus(order.getStatus());
+                o.setRejectionReason(order.getRejectionReason());
+                if (notificationService != null) {
+                    notificationService.notifyObservers("Order #" + order.getId() + " status updated to: " + order.getStatus());
+                }
+                break;
+            }
+        }
+    }
+
     public List<Order> getAllOrders() {
         return new ArrayList<>(orders);
     }

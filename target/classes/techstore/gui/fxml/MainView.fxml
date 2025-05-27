@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainBorderPane" xmlns="http://javafx.com/javafx/15.0.1" 
+          xmlns:fx="http://javafx.com/fxml/1" 
+          fx:controller="techstore.gui.controller.MainController">
+   <top>
+      <MenuBar fx:id="menuBar">
+         <menus>
+            <Menu text="File">
+               <items>
+                  <MenuItem text="Logout" onAction="#handleLogout"/>
+                  <MenuItem text="Exit" onAction="#handleExit"/>
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <VBox alignment="CENTER" spacing="10">
+         <Label fx:id="welcomeLabel" text="Welcome to TechStore"/>
+         <Label fx:id="statusLabel" text=""/>
+      </VBox>
+   </center>
+</BorderPane>

@@ -9,6 +9,7 @@ public interface CatalogueService {
     void addProduct(Product product);
     void updateProduct(Product product);
     void deleteProduct(int productId);
+    void removeProduct(int productId);
     Optional<Product> findProductById(int productId);
     List<Product> getAllProducts();
     List<Product> findProductsByCategory(Category category);
@@ -17,6 +18,8 @@ public interface CatalogueService {
     Optional<Category> findCategoryByName(String name);
     Optional<Category> findCategoryById(int id);
     List<Category> getAllCategories();
+    void removeCategory(Category category);
+    boolean isCategoryInUse(Category category);
     int getNextProductId(); // Added here for proxy to delegate if needed
 }
 

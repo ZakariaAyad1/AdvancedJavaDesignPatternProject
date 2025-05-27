@@ -1,0 +1,346 @@
+@startuml "TechStore Class Diagram"
+
+!define RECTANGLE class
+!define INTERFACE interface
+
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+skinparam Linetype ortho
+skinparam shadowing false
+skinparam roundCorner 10
+
+package "Model (MVC)" <<Frame>> {
+    RECTANGLE Product <<Component>> {
+        -id: int
+        -name: String
+        -description: String
+        -price: double
+        -category: Category
+        -brand: String
+        -warrantyMonths: int
+        -discount: double
+        +Product(id, name, desc, price, cat, brand, warranty, discount)
+        +getId(): int
+        +getName(): String
+        +getDescription(): String
+        +getPrice(): double
+        +getCategory(): Category
+    }
+    note right of Product : Base for Decorator\nBuilt by Builder
+
+    INTERFACE ProductComponent <<Interface>> {
+        +getId(): int
+        +getName(): String
+        +getDescription(): String
+        +getPrice(): double
+    }
+    Product .up.|> ProductComponent
+
+    RECTANGLE Category {
+        -id: int
+        -name: String
+        +Category(name: String)
+        +getId(): int
+        +getName(): String
+    }
+    Product "1" *-- "0..1" Category
+
+    abstract class User {
+        #id: int
+        #username: String
+        #password: String
+        #email: String
+        +User(username, password, email)
+        +getId(): int
+        +getUsername(): String
+        +checkPassword(password: String): boolean
+        +getRole(): String
+    }
+    note right of User : Product of UserFactory
+
+    class Admin {
+        +Admin(username, password, email)
+        +getRole(): String
+    }
+    Admin --|> User
+
+    class Client {
+        -shoppingCart: ShoppingCart
+        +Client(username, password, email)
+        +getRole(): String
+        +getShoppingCart(): ShoppingCart
+    }
+    Client --|> User
+    Client "1" --o "1" ShoppingCart : owns
+
+    class ShoppingCart {
+        -client: Client
+        -items: List<CartItem>
+        +ShoppingCart(client: Client)
+        +addProduct(product: ProductComponent, quantity: int)
+        +removeProduct(productId: int)
+        +updateQuantity(productId: int, quantity: int)
+        +getItems(): List<CartItem>
+        +getTotalCost(): double
+        +clearCart()
+    }
+
+    note bottom of ShoppingCart : Uses Iterator pattern implicitly\nvia List.iterator() or for-each loops
+
+    class CartItem {
+        -product: ProductComponent
+        -quantity: int
+        +CartItem(product: ProductComponent, quantity: int)
+        +getProduct(): ProductComponent
+        +getQuantity(): int
+        +getTotalPrice(): double
+    }
+    ShoppingCart "1" o-- "0..*" CartItem : contains
+    CartItem "1" *-- "1" ProductComponent : refers to
+
+    class Order {
+        -id: int
+        -client: Client
+        -orderedItems: List<CartItem>
+        -totalAmount: double
+        -orderDate: LocalDateTime
+        -status: String
+        #paymentStrategy: PaymentStrategy
+        +Order(client, items, totalAmount)
+        +getId(): int
+        +getClient(): Client
+        +setPaymentStrategy(strategy: PaymentStrategy)
+        +processPayment(): boolean
+    }
+    note top of Order : Context for Strategy pattern\nProcessed by Template Method
+    Order "1" o-- "1..*" CartItem : includes
+    Client "1" -- "0..*" Order : places
+}
+
+package "Singleton Pattern" <<Pattern>> {
+    class CatalogueManager {
+        -instance: CatalogueManager
+        -products: List<Product>
+        -categories: List<Category>
+        -nextProductId: int
+        -CatalogueManager()
+        +getInstance(): CatalogueManager
+        +addProduct(product: Product)
+        +updateProduct(product: Product)
+        +deleteProduct(productId: int)
+        +findProductById(id: int): Optional<Product>
+        +getAllProducts(): List<Product>
+        +addCategory(category: Category)
+        +getNextProductId(): int
+    }
+
+    class UserManager {
+        -instance: UserManager
+        -users: List<User>
+        #notificationService: NotificationService
+        -UserManager()
+        +getInstance(): UserManager
+        +addUser(user: User)
+        +findUserByUsername(username: String): Optional<User>
+        +setNotificationService(ns: NotificationService)
+    }
+
+    class OrderManager {
+        -instance: OrderManager
+        -orders: List<Order>
+        #notificationService: NotificationService
+        -OrderManager()
+        +getInstance(): OrderManager
+        +placeOrder(order: Order)
+        +getAllOrders(): List<Order>
+        +setNotificationService(ns: NotificationService)
+    }
+}
+
+package "Factory Method Pattern" <<Pattern>> {
+    class UserFactory {
+        +createUser(type: UserType, username, password, email): User
+    }
+    UserFactory ..> Admin
+    UserFactory ..> Client
+
+    class ProductFactory {
+        +createProduct(name, desc, price, cat, brand, warranty, disc): Product
+        +createBasicProduct(name, price, cat): Product
+    }
+    ProductFactory ..> Product
+    ProductFactory ..> ProductBuilder
+    ProductFactory ..> CatalogueManager
+}
+
+package "Builder Pattern" <<Pattern>> {
+    class ProductBuilder {
+        -id: int
+        -name: String
+        -price: double
+        -description: String
+        -category: Category
+        +ProductBuilder(id: int, name: String, price: double)
+        +description(desc: String): ProductBuilder
+        +category(cat: Category): ProductBuilder
+        +build(): Product
+    }
+    ProductBuilder ..> Product
+}
+
+package "Strategy Pattern" <<Pattern>> {
+    INTERFACE PaymentStrategy {
+        +pay(amount: double)
+    }
+
+    class CreditCardPaymentStrategy {
+        -cardNumber: String
+        -cvv: String
+        -expiryDate: String
+        -paymentGateway: ExternalPaymentGateway
+        +CreditCardPaymentStrategy(cardNum, cvv, expiry)
+        +pay(amount: double)
+    }
+
+    class PayPalPaymentStrategy {
+        -email: String
+        -password: String
+        -paymentGateway: ExternalPaymentGateway
+        +PayPalPaymentStrategy(email, password)
+        +pay(amount: double)
+    }
+
+    CreditCardPaymentStrategy ..> ExternalPaymentGateway
+    PayPalPaymentStrategy ..> ExternalPaymentGateway
+    Order --* PaymentStrategy
+}
+
+package "Command Pattern" <<Pattern>> {
+    INTERFACE Command {
+        +execute()
+    }
+
+    class AdminCommandInvoker {
+        -command: Command
+        +setCommand(command: Command)
+        +executeCommand()
+    }
+
+    class AddProductCommand {
+        -catalogueService: CatalogueService
+        -product: Product
+        +AddProductCommand(cs: CatalogueService, p: Product)
+        +execute()
+    }
+
+    class UpdateProductCommand {
+        -catalogueService: CatalogueService
+        -productToUpdate: Product
+        +UpdateProductCommand(cs: CatalogueService, p: Product)
+        +execute()
+    }
+
+    class DeleteProductCommand {
+        -catalogueService: CatalogueService
+        -productIdToDelete: int
+        +DeleteProductCommand(cs: CatalogueService, id: int)
+        +execute()
+    }
+
+    AdminCommandInvoker "1" o-- "1" Command
+    AddProductCommand ..> CatalogueService
+    UpdateProductCommand ..> CatalogueService
+    DeleteProductCommand ..> CatalogueService
+}
+
+package "Observer Pattern" <<Pattern>> {
+    INTERFACE Subject {
+        +registerObserver(o: Observer)
+        +removeObserver(o: Observer)
+        +notifyObservers(message: String)
+    }
+
+    INTERFACE Observer {
+        +update(message: String)
+    }
+
+    class NotificationService {
+        -observers: List<Observer>
+        +registerObserver(o: Observer)
+        +removeObserver(o: Observer)
+        +notifyObservers(message: String)
+    }
+
+    class AdminNotifier {
+        -adminName: String
+        +AdminNotifier(adminName: String)
+        +update(message: String)
+    }
+
+    NotificationService o-- Observer
+    UserManager ..> NotificationService
+    OrderManager ..> NotificationService
+}
+
+package "Decorator Pattern" <<Pattern>> {
+    abstract class ProductDecorator {
+        #wrappedProduct: ProductComponent
+        +ProductDecorator(wrapped: ProductComponent)
+        +getId(): int
+        +getName(): String
+        +getDescription(): String
+        +getPrice(): double
+    }
+    ProductDecorator --|> ProductComponent
+    ProductDecorator "1" *-- "1" ProductComponent
+
+    class GiftWrapDecorator {
+        +GiftWrapDecorator(wrapped: ProductComponent)
+        +getName(): String
+        +getDescription(): String
+        +getPrice(): double
+    }
+
+    class ExtendedWarrantyDecorator {
+        -extraYears: int
+        +ExtendedWarrantyDecorator(wrapped: ProductComponent, extraYears: int)
+        +getName(): String
+        +getDescription(): String
+        +getPrice(): double
+    }
+    GiftWrapDecorator --|> ProductDecorator
+    ExtendedWarrantyDecorator --|> ProductDecorator
+}
+
+package "Adapter Pattern" <<Pattern>> {
+    INTERFACE ExternalPaymentGateway {
+        +processPayment(amount: double): boolean
+    }
+
+    class PayPalApi {
+        +sendPayment(email: String, totalAmount: double)
+    }
+
+    class CreditCardApi {
+        +chargeCreditCard(cardNum, expiry, cvv, amount: double): boolean
+    }
+
+    class PayPalAdapter {
+        -payPalApi: PayPalApi
+        +PayPalAdapter(api: PayPalApi)
+        +processPayment(amount: double): boolean
+    }
+
+    class CreditCardAdapter {
+        -creditCardApi: CreditCardApi
+        +CreditCardAdapter(api: CreditCardApi)
+        +processPayment(amount: double): boolean
+    }
+
+    PayPalAdapter --|> ExternalPaymentGateway
+    CreditCardAdapter --|> ExternalPaymentGateway
+    PayPalAdapter ..> PayPalApi
+    CreditCardAdapter ..> CreditCardApi
+}
+
+@enduml

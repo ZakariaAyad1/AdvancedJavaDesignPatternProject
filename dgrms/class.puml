@@ -1,0 +1,305 @@
+@startuml TechStoreClassDiagram
+
+' === Configuration ===
+!define MODEL_COLOR LightBlue
+!define PATTERN_COLOR LightGreen
+!define CONTROLLER_COLOR LightSalmon
+!define VIEW_COLOR LightYellow
+!define SERVICE_COLOR LightCyan
+
+skinparam linetype polyline
+skinparam packageStyle rect
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+' === Enums ===
+enum UserFactory.UserType {
+  ADMIN
+  CLIENT
+}
+
+' === MODEL Package ===
+package techstore.model <<Model>> {
+
+  abstract class User {
+    # id: int
+    # username: String
+    # password: String <font color=red>(Hashed)</font>
+    # email: String
+    + User(username, password, email)
+    + getId(): int
+    + getUsername(): String
+    + getEmail(): String
+    + checkPassword(String): boolean
+    + {abstract} getRole(): String
+  }
+
+  class Admin extends User {
+    + Admin(username, password, email)
+    + getRole(): String
+  }
+
+  class Client extends User {
+    - shoppingCart: ShoppingCart
+    + Client(username, password, email)
+    + getRole(): String
+    + getShoppingCart(): ShoppingCart
+  }
+  Client "1" *-- "1" ShoppingCart : has
+
+  interface ProductComponent <<Decorator Component>> PATTERN_COLOR {
+    + getId(): int
+    + getName(): String
+    + getDescription(): String
+    + getPrice(): double
+  }
+
+  class Product implements ProductComponent {
+    - id: int
+    - name: String
+    - description: String
+    - price: double
+    - category: Category
+    - brand: String
+    - warrantyMonths: int
+    - discount: double
+    + Product(id, name, desc, price, cat, brand, warranty, discount)
+    + getId(): int
+    + getName(): String
+    + getDescription(): String
+    + getPrice(): double
+    + getCategory(): Category
+  }
+  note right of Product : Built by ProductBuilder
+
+  class Category {
+    - id: int
+    - name: String
+    + Category(name)
+    + getId(): int
+    + getName(): String
+  }
+  Product "1" -- "0..1" Category : belongs to
+
+  class ShoppingCart {
+    - client: Client
+    - items: List<CartItem>
+    + ShoppingCart(client)
+    + addProduct(product: ProductComponent, quantity: int)
+    + removeProduct(productId: int)
+    + updateQuantity(productId: int, quantity: int)
+    + getItems(): List<CartItem>
+    + getTotalCost(): double
+    + clearCart()
+    + isEmpty(): boolean
+  }
+  note on link between ShoppingCart and CartItem : Iterates over CartItems\n(Iterator Pattern via List)
+  ShoppingCart "1" *-- "0..*" CartItem : contains
+
+  class CartItem {
+    - product: ProductComponent
+    - quantity: int
+    + CartItem(product, quantity)
+    + getProduct(): ProductComponent
+    + getQuantity(): int
+    + getTotalPrice(): double
+  }
+  CartItem "1" -- "1" ProductComponent : refers to
+
+  class Order {
+    - id: int
+    - client: Client
+    - orderedItems: List<CartItem>
+    - totalAmount: double
+    - orderDate: LocalDateTime
+    - status: String
+    - paymentStrategy: PaymentStrategy
+    + Order(client, items, totalAmount)
+    + getId(): int
+    + getClient(): Client
+    + getOrderedItems(): List<CartItem>
+    + getTotalAmount(): double
+    + setStatus(String)
+    + setPaymentStrategy(PaymentStrategy)
+    + processPayment(): boolean
+  }
+  note right of Order::processPayment : Uses Strategy (paymentStrategy.pay())
+  Order "1" -- "1" Client : placed by
+  Order "1" o-- "0..*" CartItem : includes
+}
+
+' === SERVICE Interfaces ===
+package techstore.service <<Service Layer>> SERVICE_COLOR {
+  interface CatalogueService <<SubjectInterface for Proxy>> PATTERN_COLOR {
+    + addProduct(product: Product)
+    + updateProduct(product: Product)
+    + deleteProduct(productId: int)
+    + findProductById(productId: int): Optional<Product>
+    + getAllProducts(): List<Product>
+    + findProductsByCategory(category: Category): List<Product>
+    + addCategory(category: Category)
+    + findCategoryByName(name: String): Optional<Category>
+    + findCategoryById(id: int): Optional<Category>
+    + getAllCategories(): List<Category>
+    + getNextProductId(): int
+  }
+}
+
+' === PATTERNS Package ===
+package techstore.patterns <<Patterns>> PATTERN_COLOR {
+
+  package singleton <<Singleton>> {
+    class UserManager <<Singleton>> {
+      - {static} instance: UserManager
+      - users: List<User>
+      - notificationService: NotificationService
+      - UserManager()
+      + {static} getInstance(): UserManager
+      + addUser(user: User)
+      + findUserByUsername(username: String): Optional<User>
+      + getAllUsers(): List<User>
+      + setNotificationService(ns: NotificationService)
+    }
+
+    class CatalogueManager <<Singleton, RealSubject for Proxy>> implements techstore.service.CatalogueService {
+      - {static} instance: CatalogueManager
+      - products: List<Product>
+      - categories: List<Category>
+      - nextProductId: int
+      - CatalogueManager()
+      + {static} getInstance(): CatalogueManager
+      + addProduct(product: Product)
+      + updateProduct(product: Product)
+      + getNextProductId(): int
+    }
+
+    class OrderManager <<Singleton>> {
+      - {static} instance: OrderManager
+      - orders: List<Order>
+      - notificationService: NotificationService
+      - OrderManager()
+      + {static} getInstance(): OrderManager
+      + placeOrder(order: Order)
+      + getAllOrders(): List<Order>
+      + findOrderById(orderId: int): Optional<Order>
+      + setNotificationService(ns: NotificationService)
+    }
+  }
+
+  package factory <<Factory Method>> {
+    class UserFactory {
+      + createUser(type: UserType, username, password, email): User
+    }
+    UserFactory ..> User : <<creates>>
+    UserFactory ..> Admin : <<creates>>
+    UserFactory ..> Client : <<creates>>
+
+    class ProductFactory {
+      + createProduct(name, desc, price, cat, brand, warranty, discount): Product
+      + createBasicProduct(name, price, cat): Product
+    }
+    ProductFactory ..> Product : <<creates>>
+    ProductFactory ..> ProductBuilder : <<uses>>
+  }
+
+  package builder <<Builder>> {
+    class ProductBuilder {
+      - id: int
+      - name: String
+      - price: double
+      - description: String
+      - category: Category
+      + ProductBuilder(id, name, price)
+      + description(desc: String): ProductBuilder
+      + category(cat: Category): ProductBuilder
+      + build(): Product
+    }
+    ProductBuilder ..> Product : <<builds>>
+  }
+
+  package strategy <<Strategy>> {
+    interface PaymentStrategy {
+      + pay(amount: double)
+    }
+    Order "1" -- "0..1" PaymentStrategy : uses
+
+    class CreditCardPaymentStrategy implements PaymentStrategy {
+      - cardNumber: String
+      - cvv: String
+      - expiryDate: String
+      - paymentGateway: ExternalPaymentGateway
+      + CreditCardPaymentStrategy(cardNum, cvv, expiry)
+      + pay(amount: double)
+    }
+
+    class PayPalPaymentStrategy implements PaymentStrategy {
+      - email: String
+      - password: String <font color=red>(Demo only)</font>
+      - paymentGateway: ExternalPaymentGateway
+      + PayPalPaymentStrategy(email, password)
+      + pay(amount: double)
+    }
+  }
+
+  package command <<Command>> {
+    interface Command {
+      + execute()
+    }
+    class AddProductCommand implements Command {
+      - catalogueService: techstore.service.CatalogueService
+      - product: Product
+      + AddProductCommand(cs, product)
+      + execute()
+    }
+    class UpdateProductCommand implements Command {
+      - catalogueService: techstore.service.CatalogueService
+      - productToUpdate: Product
+      + UpdateProductCommand(cs, product)
+      + execute()
+    }
+    class DeleteProductCommand implements Command {
+      - catalogueService: techstore.service.CatalogueService
+      - productIdToDelete: int
+      + DeleteProductCommand(cs, productId)
+      + execute()
+    }
+
+    AddProductCommand ..> techstore.service.CatalogueService
+    UpdateProductCommand ..> techstore.service.CatalogueService
+    DeleteProductCommand ..> techstore.service.CatalogueService
+
+    class AdminCommandInvoker <<Invoker>> {
+      - command: Command
+      + setCommand(command: Command)
+      + executeCommand()
+    }
+    AdminCommandInvoker "1" o-- "0..1" Command : has-a
+  }
+
+  package observer <<Observer>> {
+    interface Subject {
+      + registerObserver(o: Observer)
+      + removeObserver(o: Observer)
+      + notifyObservers(message: String)
+    }
+    interface Observer {
+      + update(message: String)
+    }
+    class NotificationService implements Subject <<ConcreteSubject>> {
+      - observers: List<Observer>
+      + registerObserver(o: Observer)
+      + removeObserver(o: Observer)
+      + notifyObservers(message: String)
+    }
+    NotificationService "1" o-- "0..*" Observer : notifies
+    class AdminNotifier implements Observer <<ConcreteObserver>> {
+      - adminName: String
+      + AdminNotifier(name: String)
+      + update(message: String)
+    }
+    UserManager ..> NotificationService : <<uses>>
+    OrderManager ..> NotificationService : <<uses>>
+  }
+}
+
+@enduml

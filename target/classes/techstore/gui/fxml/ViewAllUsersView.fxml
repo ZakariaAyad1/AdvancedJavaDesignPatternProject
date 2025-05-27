@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.ViewAllUsersController" 
+      spacing="10.0" prefHeight="400.0" prefWidth="500.0">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <Label text="All Registered Users" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+    <TableView fx:id="usersTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="userIdColumn" prefWidth="70.0" text="User ID" />
+            <TableColumn fx:id="usernameColumn" prefWidth="150.0" text="Username" />
+            <TableColumn fx:id="emailColumn" prefWidth="180.0" text="Email" />
+            <TableColumn fx:id="roleColumn" prefWidth="100.0" text="Role" />
+        </columns>
+    </TableView>
+</VBox>

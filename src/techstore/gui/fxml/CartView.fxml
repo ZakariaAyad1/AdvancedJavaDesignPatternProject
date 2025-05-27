@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.CartController"
+      spacing="10" prefWidth="800" prefHeight="600">
+    
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+
+    <Label text="Shopping Cart" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    
+    <TableView fx:id="cartTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="productNameColumn" text="Product" prefWidth="300"/>
+            <TableColumn fx:id="quantityColumn" text="Quantity" prefWidth="100"/>
+            <TableColumn fx:id="unitPriceColumn" text="Unit Price" prefWidth="150"/>
+            <TableColumn fx:id="subtotalColumn" text="Subtotal" prefWidth="150"/>
+        </columns>
+    </TableView>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Label fx:id="totalLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    </HBox>
+    
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Update Quantity" onAction="#handleUpdateQuantity"/>
+        <Button text="Remove Item" onAction="#handleRemoveItem"/>
+        <Button fx:id="checkoutButton" text="Checkout" onAction="#handleCheckout"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.CheckoutDialogController"
+      spacing="15.0" prefWidth="400.0">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    
+    <Label text="Select Payment Method" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+    <ComboBox fx:id="paymentTypeComboBox" promptText="Choose Payment Type" prefWidth="Infinity"/>
+
+    <GridPane fx:id="creditCardPane" hgap="10.0" vgap="10.0" visible="false" managed="false">
+        <Label text="Card Number:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="ccNumberField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="CVV:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="ccCvvField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label text="Expiry (MM/YY):" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="ccExpiryField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    </GridPane>
+
+    <GridPane fx:id="payPalPane" hgap="10.0" vgap="10.0" visible="false" managed="false">
+        <Label text="PayPal Email:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="payPalEmailField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <PasswordField fx:id="payPalPasswordField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    </GridPane>
+    
+    <Label fx:id="errorMessageLabel" style="-fx-text-fill: red;"/>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Button onAction="#handleOk" text="Confirm Payment" defaultButton="true"/>
+        <Button onAction="#handleCancel" text="Cancel" cancelButton="true"/>
+    </HBox>
+</VBox>

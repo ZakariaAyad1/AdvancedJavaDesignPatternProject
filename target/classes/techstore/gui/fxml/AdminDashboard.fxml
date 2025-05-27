@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/15.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="techstore.gui.controller.AdminDashboardController" 
+            prefHeight="550.0" prefWidth="780.0">
+    <left>
+        <VBox spacing="10.0" style="-fx-background-color: #f0f0f0; -fx-padding: 10;">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+            <Label text="Admin Navigation" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <Button onAction="#handleManageProducts" text="Manage Products" maxWidth="Infinity"/>
+            <Button onAction="#handleManageCategories" text="Manage Categories" maxWidth="Infinity"/>
+            <Button onAction="#handleViewAllOrders" text="View All Orders" maxWidth="Infinity"/>
+            <Button onAction="#handleViewAllUsers" text="View All Users" maxWidth="Infinity"/>
+            <!-- Autres raccourcis admin si besoin -->
+        </VBox>
+    </left>
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
+            </padding>
+            <Label fx:id="adminWelcomeLabel" text="Admin Dashboard" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <!-- Le contenu principal des vues spécifiques (produits, catégories) sera chargé ici -->
+            <BorderPane fx:id="adminContentArea" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>

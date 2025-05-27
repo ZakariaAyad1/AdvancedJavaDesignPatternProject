@@ -14,6 +14,15 @@ public class Order {
     private final LocalDateTime orderDate;
     private String status; // e.g., PENDING, PROCESSING, SHIPPED, DELIVERED
     private PaymentStrategy paymentStrategy; // Strategy Pattern
+    private String rejectionReason;
+
+    // Status constants
+    public static final String STATUS_PENDING = "PENDING";
+    public static final String STATUS_APPROVED = "APPROVED";
+    public static final String STATUS_REJECTED = "REJECTED";
+    public static final String STATUS_PAID = "PAID";
+    public static final String STATUS_SHIPPED = "SHIPPED";
+    public static final String STATUS_COMPLETED = "COMPLETED";
 
     public Order(Client client, List<CartItem> orderedItems, double totalAmount) {
         this.id = nextId++;
@@ -21,7 +30,7 @@ public class Order {
         this.orderedItems = new ArrayList<>(orderedItems); // Copy items
         this.totalAmount = totalAmount;
         this.orderDate = LocalDateTime.now();
-        this.status = "PENDING";
+        this.status = STATUS_PENDING; // All new orders start as PENDING
     }
 
     public int getId() { return id; }
@@ -30,8 +39,13 @@ public class Order {
     public double getTotalAmount() { return totalAmount; }
     public LocalDateTime getOrderDate() { return orderDate; }
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setStatus(String status) {
+        this.status = status;
+        System.out.println("Order #" + id + " status updated to: " + status); // Debug line
+    }
     public void setPaymentStrategy(PaymentStrategy paymentStrategy) { this.paymentStrategy = paymentStrategy; }
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String reason) { this.rejectionReason = reason; }
 
     public boolean processPayment() {
         if (paymentStrategy == null) {
@@ -41,7 +55,7 @@ public class Order {
         System.out.println("Processing payment for order " + id + " amount $" + String.format("%.2f", totalAmount));
         paymentStrategy.pay(totalAmount);
         // In a real app, payment success/failure would be handled
-        this.status = "PAID";
+        this.status = STATUS_PAID;
         return true;
     }
 

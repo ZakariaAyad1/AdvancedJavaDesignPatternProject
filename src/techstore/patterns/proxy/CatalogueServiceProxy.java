@@ -54,6 +54,15 @@ public class CatalogueServiceProxy implements CatalogueService {
     }
 
     @Override
+    public void removeProduct(int productId) {
+        if (isAdmin()) {
+            realCatalogueService.removeProduct(productId);
+        } else {
+            System.out.println("Access Denied: Only Admins can remove products.");
+        }
+    }
+
+    @Override
     public int getNextProductId() {
         // ID generation might be considered a privileged operation or not.
         // If it's just reading, anyone can. If it implies a write lock, admin only.
@@ -100,5 +109,15 @@ public class CatalogueServiceProxy implements CatalogueService {
     @Override
     public List<Category> getAllCategories() {
         return realCatalogueService.getAllCategories();
+    }
+
+    @Override
+    public void removeCategory(Category category) {
+
+    }
+
+    @Override
+    public boolean isCategoryInUse(Category category) {
+        return false;
     }
 }
