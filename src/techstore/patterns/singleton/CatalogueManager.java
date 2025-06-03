@@ -47,9 +47,13 @@ public class CatalogueManager implements CatalogueService { // Implements interf
     }
 
     @Override
+    public List<Product> getProductsByCategory(Category selectedCategory) {
+        return List.of();
+    }
+
+    @Override
     public void addProduct(Product product) {
-        // In a real system, ID would be managed by DB or ensure product given has unique ID
-        // For simplicity, we assume product passed has ID already set (e.g. via builder + getNextProductId)
+
         products.removeIf(p -> p.getId() == product.getId()); // Remove if exists to update
         products.add(product);
         System.out.println("Product added/updated in RealCatalogueService: " + product.getName());

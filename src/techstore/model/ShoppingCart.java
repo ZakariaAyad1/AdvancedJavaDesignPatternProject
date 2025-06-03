@@ -12,19 +12,51 @@ public class ShoppingCart {
     public ShoppingCart(Client client) {
         this.client = client;
         this.items = new ArrayList<>();
+    }    public void addProduct(ProductComponent product, int quantity) {
+        if (product == null || quantity <= 0) {
+            throw new IllegalArgumentException("Invalid product or quantity");
+        }
+
+        // First find if an identical product configuration exists
+        CartItem existingItem = items.stream()
+            .filter(item -> {
+                // Check if products have same base ID and same decorator chain
+                ProductComponent existing = item.getProduct();
+                return isSameProductConfiguration(existing, product);
+            })
+            .findFirst()
+            .orElse(null);
+
+        if (existingItem != null) {
+            // Update quantity of existing item
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+        } else {
+            // Add as new item
+            items.add(new CartItem(product, quantity));
+        }
     }
 
-    public void addProduct(ProductComponent product, int quantity) {
-        for (CartItem item : items) {
-            // If product (or its base if decorated) is already in cart, update quantity
-            Product baseProduct = getBaseProduct(item.getProduct());
-            Product newBaseProduct = getBaseProduct(product);
-            if (baseProduct.getId() == newBaseProduct.getId() && item.getProduct().getClass() == product.getClass()) { // Ensure same decorators
-                item.setQuantity(item.getQuantity() + quantity);
-                return;
-            }
+    private boolean isSameProductConfiguration(ProductComponent p1, ProductComponent p2) {
+        // If they're not the same type, they can't be the same configuration
+        if (!p1.getClass().equals(p2.getClass())) {
+            return false;
         }
-        items.add(new CartItem(product, quantity));
+
+        // If they're base products, compare IDs
+        if (p1 instanceof Product && p2 instanceof Product) {
+            return ((Product) p1).getId() == ((Product) p2).getId();
+        }
+
+        // If they're decorators, check if they wrap the same type of product
+        if (p1 instanceof techstore.patterns.decorator.ProductDecorator &&
+            p2 instanceof techstore.patterns.decorator.ProductDecorator) {
+            return isSameProductConfiguration(
+                ((techstore.patterns.decorator.ProductDecorator) p1).getWrappedProduct(),
+                ((techstore.patterns.decorator.ProductDecorator) p2).getWrappedProduct()
+            );
+        }
+
+        return false;
     }
 
     private Product getBaseProduct(ProductComponent pc) {

@@ -123,9 +123,7 @@ public class ClientController {
         if (client.getShoppingCart().isEmpty()) return;
 
         int productId = InputUtil.getInt("Enter Product ID from your cart to update quantity: ");
-        // Note: This simple ID check might not distinguish between decorated versions of the same base product.
-        // A more robust cart would handle this, perhaps by cart item index.
-        // For now, we assume client means the base product ID.
+
 
         // Check if product (base) is in cart
         boolean productInCart = client.getShoppingCart().getItems().stream()

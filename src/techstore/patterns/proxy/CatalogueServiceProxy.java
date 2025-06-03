@@ -64,10 +64,13 @@ public class CatalogueServiceProxy implements CatalogueService {
 
     @Override
     public int getNextProductId() {
-        // ID generation might be considered a privileged operation or not.
-        // If it's just reading, anyone can. If it implies a write lock, admin only.
-        // For now, delegate directly.
+
         return realCatalogueService.getNextProductId();
+    }
+
+    @Override
+    public List<Product> getProductsByCategory(Category selectedCategory) {
+        return List.of();
     }
 
 

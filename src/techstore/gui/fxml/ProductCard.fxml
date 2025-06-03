@@ -28,6 +28,9 @@
     <Label fx:id="priceLabel" 
            styleClass="product-price"/>
            
+    <Label fx:id="categoryLabel"
+           styleClass="product-category"/>
+           
     <Label fx:id="brandLabel" 
            styleClass="product-brand"/>
            

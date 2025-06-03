@@ -77,4 +77,9 @@ public class RealCatalogueService implements CatalogueService {
     public int getNextProductId() {
         return 0;
     }
+
+    @Override
+    public List<Product> getProductsByCategory(Category selectedCategory) {
+        return List.of();
+    }
 }

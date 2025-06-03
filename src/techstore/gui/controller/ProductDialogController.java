@@ -2,6 +2,7 @@ package techstore.gui.controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,9 +39,17 @@ public class ProductDialogController {
     private CatalogueService catalogueService;
     private File selectedImageFile;
 
+    private static final String UPLOADS_DIR = "src/techstore/resources/uploads/products";
+    private static final String DEFAULT_IMAGE_PATH = "images/default-product.png";
+
     @FXML
     private void initialize() {
-        // Initialization code if needed
+        // Disable manual editing of image path
+        imagePathField.setEditable(false);
+        
+        // Set default image preview
+        Image defaultImage = new Image(getClass().getResourceAsStream("/techstore/resources/" + DEFAULT_IMAGE_PATH));
+        imagePreview.setImage(defaultImage);
     }
 
     @FXML
@@ -61,16 +70,15 @@ public class ProductDialogController {
     }
 
     private String saveImage(File file) throws IOException {
-        String uploadsDir = "src/techstore/resources/uploads/products";
-        File directory = new File(uploadsDir);
+        File directory = new File(UPLOADS_DIR);
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
         String fileName = System.currentTimeMillis() + "_" + file.getName();
-        Path targetPath = Paths.get(uploadsDir, fileName);
+        Path targetPath = Paths.get(UPLOADS_DIR, fileName);
         Files.copy(file.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        return "products/" + fileName;
+        return "uploads/products/" + fileName;
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -93,29 +101,22 @@ public class ProductDialogController {
             categoryComboBox.setValue(product.getCategory());
             brandField.setText(product.getBrand());
             
-            if (product.getImagePath() != null) {
-                imagePathField.setText(product.getImagePath());
-                String imagePath = "src/techstore/resources/" + product.getImagePath();
-                File imageFile = new File(imagePath);
-                if (imageFile.exists()) {
-                    Image image = new Image(imageFile.toURI().toString());
-                    imagePreview.setImage(image);
+            // Load existing product image
+            String imagePath = product.getImagePath();
+            if (imagePath != null) {
+                imagePathField.setText(imagePath);
+                try {
+                    File imageFile = new File("src/techstore/resources/" + imagePath);
+                    if (imageFile.exists()) {
+                        Image image = new Image(imageFile.toURI().toString());
+                        imagePreview.setImage(image);
+                    }
+                } catch (Exception e) {
+                    // If there's any error loading the image, keep the default image
+                    e.printStackTrace();
                 }
             }
         }
-    }
-
-    public void setReadOnly() {
-        nameField.setEditable(false);
-        descriptionArea.setEditable(false);
-        priceField.setEditable(false);
-        categoryComboBox.setDisable(true);
-        brandField.setEditable(false);
-        imagePathField.setEditable(false);
-    }
-
-    public boolean isOkClicked() {
-        return okClicked;
     }
 
     @FXML
@@ -129,10 +130,16 @@ public class ProductDialogController {
                 String brand = brandField.getText();
                 String imagePath = null;
 
+                // Handle image path
                 if (selectedImageFile != null) {
+                    // New image selected
                     imagePath = saveImage(selectedImageFile);
-                } else if (product != null) {
+                } else if (product != null && product.getImagePath() != null) {
+                    // Keep existing image for edit mode
                     imagePath = product.getImagePath();
+                } else {
+                    // Use default image for new products without an image
+                    imagePath = DEFAULT_IMAGE_PATH;
                 }
 
                 if (product == null) {
@@ -146,9 +153,7 @@ public class ProductDialogController {
                     product.setPrice(price);
                     product.setCategory(category);
                     product.setBrand(brand);
-                    if (imagePath != null) {
-                        product.setImagePath(imagePath);
-                    }
+                    product.setImagePath(imagePath);
                     catalogueService.updateProduct(product);
                 }
 
@@ -156,36 +161,31 @@ public class ProductDialogController {
                 dialogStage.close();
             } catch (IOException e) {
                 errorMessageLabel.setText("Error saving image: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-    }
-
-    @FXML
-    private void handleCancel() {
-        dialogStage.close();
     }
 
     private boolean isInputValid() {
         String errorMessage = "";
 
         if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
-            errorMessage += "Name is required\n";
+            errorMessage += "Product name is required!\n";
         }
         if (categoryComboBox.getValue() == null) {
-            errorMessage += "Category must be selected\n";
+            errorMessage += "Please select a category!\n";
         }
         try {
-            if (!priceField.getText().isEmpty()) {
+            if (!priceField.getText().trim().isEmpty()) {
                 Double.parseDouble(priceField.getText());
             } else {
-                errorMessage += "Price is required\n";
+                errorMessage += "Please enter a valid price!\n";
             }
         } catch (NumberFormatException e) {
-            errorMessage += "Price must be a valid number\n";
+            errorMessage += "Please enter a valid price (must be a number)!\n";
         }
 
         if (errorMessage.isEmpty()) {
-            errorMessageLabel.setText("");
             return true;
         } else {
             errorMessageLabel.setText(errorMessage);
@@ -193,7 +193,28 @@ public class ProductDialogController {
         }
     }
 
-    public Product getProduct() {
-        return product;
+    public boolean isOkClicked() {
+        return okClicked;
+    }
+
+    @FXML
+    private void handleCancel() {
+        dialogStage.close();
+    }
+
+    public void setReadOnly() {
+        nameField.setEditable(false);
+        descriptionArea.setEditable(false);
+        priceField.setEditable(false);
+        categoryComboBox.setDisable(true);
+        brandField.setEditable(false);
+        imagePathField.setEditable(false);
+        imagePreview.setDisable(true);
+
+        // Hide buttons in read-only mode
+        Node buttonBox = imagePreview.getParent().lookup("HBox");
+        if (buttonBox != null) {
+            buttonBox.setVisible(false);
+        }
     }
 }

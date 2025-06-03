@@ -23,6 +23,12 @@
     -fx-font-weight: bold;
 }
 
+.product-category {
+    -fx-font-size: 12px;
+    -fx-text-fill: #007bff;
+    -fx-font-style: italic;
+}
+
 .product-brand {
     -fx-font-size: 12px;
     -fx-text-fill: #666;

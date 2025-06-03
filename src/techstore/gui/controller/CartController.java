@@ -7,13 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -31,6 +25,7 @@ import techstore.patterns.templatemethod.OrderProcessingTemplate;
 
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -44,38 +39,79 @@ public class CartController {
     @FXML private Label totalLabel;
     @FXML private Button checkoutButton;
 
-
     private Client currentClient;
     private OrderManager orderManager;
     private Stage ownerStage;
-    private ObservableList<CartItem> cartItemsList;
     private Consumer<String> statusUpdater;
 
+    @FXML
+    private void initialize() {
+        // Initialize columns
+        productNameColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getProduct().getName()));
+        
+        quantityColumn.setCellValueFactory(
+            new PropertyValueFactory<>("quantity"));
+        
+        unitPriceColumn.setCellValueFactory(cellData -> 
+            new SimpleDoubleProperty(cellData.getValue().getProduct().getPrice()).asObject());
+        
+        subtotalColumn.setCellValueFactory(cellData -> 
+            new SimpleDoubleProperty(cellData.getValue().getTotalPrice()).asObject());
+
+        // Format price columns
+        unitPriceColumn.setCellFactory(column -> new TableCell<CartItem, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty || price == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("$%.2f", price));
+                }
+            }
+        });
+
+        subtotalColumn.setCellFactory(column -> new TableCell<CartItem, Double>() {
+            @Override
+            protected void updateItem(Double price, boolean empty) {
+                super.updateItem(price, empty);
+                if (empty || price == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("$%.2f", price));
+                }
+            }
+        });
+
+        cartTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+    }
 
     public void initData(Client client, OrderManager orderManager, Stage ownerStage, Consumer<String> statusUpdater) {
         this.currentClient = client;
         this.orderManager = orderManager;
         this.ownerStage = ownerStage;
         this.statusUpdater = statusUpdater;
-
-        // CellValueFactory pour les colonnes
-        productNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getProduct().getName()));
-        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        unitPriceColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getProduct().getPrice()).asObject());
-        subtotalColumn.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
-
+        
+        // Load cart items
         loadCartItems();
-        updateTotal();
     }
 
     private void loadCartItems() {
-        cartItemsList = FXCollections.observableArrayList(currentClient.getShoppingCart().getItems());
-        cartTable.setItems(cartItemsList);
-        checkoutButton.setDisable(cartItemsList.isEmpty());
+        if (currentClient != null && currentClient.getShoppingCart() != null) {
+            List<CartItem> items = currentClient.getShoppingCart().getItems();
+            cartTable.setItems(FXCollections.observableArrayList(items));
+            updateTotal();
+            statusUpdater.accept("Cart updated: " + items.size() + " items");
+        }
     }
 
     private void updateTotal() {
-        totalLabel.setText(String.format("Total: $%.2f", currentClient.getShoppingCart().getTotalCost()));
+        double total = cartTable.getItems().stream()
+                .mapToDouble(CartItem::getTotalPrice)
+                .sum();
+        totalLabel.setText(String.format("Total: $%.2f", total));
+        checkoutButton.setDisable(cartTable.getItems().isEmpty());
     }
 
     private Product getBaseProduct(ProductComponent pc) {

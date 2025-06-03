@@ -15,7 +15,9 @@ import techstore.patterns.decorator.ProductComponent;
 import techstore.service.CatalogueService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ClientProductViewController {
     @FXML private FlowPane productGrid;
@@ -51,34 +53,49 @@ public class ClientProductViewController {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ProductCard.fxml"));
                 VBox productCard = loader.load();
+                
                 ProductCardController controller = loader.getController();
-                controller.setData(product, this);
+                controller.setProduct(product, currentClient, catalogueService, ownerStage, statusUpdater);
+                
                 productGrid.getChildren().add(productCard);
             } catch (IOException e) {
                 e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not load product card: " + e.getMessage());
             }
         }
     }    @FXML
     private void handleCategoryFilter() {
         Category selectedCategory = categoryFilterComboBox.getValue();
+        if (selectedCategory == null) return;
+
         productGrid.getChildren().clear();
+        List<Product> filteredList;
         
-        for (Product product : productList) {
-            if (selectedCategory.getName().equals("All Categories") ||
-                (product.getCategory() != null && product.getCategory().getName().equals(selectedCategory.getName()))) {
-                try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ProductCard.fxml"));
-                    VBox productCard = loader.load();
-                    ProductCardController controller = loader.getController();
-                    controller.setData(product, this);
-                    productGrid.getChildren().add(productCard);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if (selectedCategory.getName().equals("All Categories")) {
+            filteredList = productList;
+        } else {
+            filteredList = productList.stream()
+                .filter(product -> product.getCategory().equals(selectedCategory))
+                .collect(Collectors.toList());
+        }
+
+        for (Product product : filteredList) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ProductCard.fxml"));
+                VBox productCard = loader.load();
+                
+                ProductCardController controller = loader.getController();
+                controller.setProduct(product, currentClient, catalogueService, ownerStage, statusUpdater);
+                
+                productGrid.getChildren().add(productCard);
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not load product card: " + e.getMessage());
             }
         }
-        statusUpdater.accept("Products filtered by category: " + selectedCategory.getName());
-    }    public void showProductDetails(Product product) {
+    }
+
+    public void showProductDetails(Product product) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ProductDialog.fxml"));
             VBox page = loader.load();
