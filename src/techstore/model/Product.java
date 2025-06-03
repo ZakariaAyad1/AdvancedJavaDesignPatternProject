@@ -17,10 +17,11 @@ public class Product implements ProductComponent { // Will implement ProductComp
     private String brand; // Optional, for Builder
     private int warrantyMonths; // Optional, for Builder
     private double discount; // Optional, for Builder
+    private String imagePath; // Path to product image
 
     // Constructor for Builder
     public Product(int id, String name, String description, double price, Category category,
-                   String brand, int warrantyMonths, double discount) {
+                   String brand, int warrantyMonths, double discount, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -29,6 +30,7 @@ public class Product implements ProductComponent { // Will implement ProductComp
         this.brand = brand;
         this.warrantyMonths = warrantyMonths;
         this.discount = discount;
+        this.imagePath = imagePath;
     }
 
     public int getId() { return id; }
@@ -46,7 +48,8 @@ public class Product implements ProductComponent { // Will implement ProductComp
     public void setBrand(String brand) { this.brand = brand; }
     public int getWarrantyMonths() { return warrantyMonths; }
     public double getDiscount() { return discount; }
-
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
     @Override
     public String toString() {
@@ -57,6 +60,7 @@ public class Product implements ProductComponent { // Will implement ProductComp
                 (brand != null ? "\n  Brand: " + brand : "") +
                 (warrantyMonths > 0 ? "\n  Warranty: " + warrantyMonths + " months" : "") +
                 (discount > 0 ? "\n  Discount: " + (discount * 100) + "%" : "") +
+                (imagePath != null ? "\n  Image: " + imagePath : "") +
                 "\n  Category: " + (category != null ? category.getName() : "N/A");
     }
 

@@ -20,7 +20,7 @@ public interface CatalogueService {
     List<Category> getAllCategories();
     void removeCategory(Category category);
     boolean isCategoryInUse(Category category);
-    int getNextProductId(); // Added here for proxy to delegate if needed
+    int getNextProductId(); //  for proxy to delegate if needed
 }
 
 // RealCatalogueService is CatalogueManager, which already implements CatalogueService.

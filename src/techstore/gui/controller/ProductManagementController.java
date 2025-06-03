@@ -2,6 +2,7 @@ package techstore.gui.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -27,10 +28,12 @@ public class ProductManagementController {
     @FXML private TableColumn<Product, String> brandColumn;
     @FXML private Button editButton;
     @FXML private Button deleteButton;
+    @FXML private ComboBox<Category> categoryFilterComboBox;
 
     private CatalogueService catalogueService;
     private Stage ownerStage;
     private ObservableList<Product> productList;
+    private FilteredList<Product> filteredProducts;
 
     public void initData(CatalogueService catalogueService, Stage ownerStage) {
         this.catalogueService = catalogueService;
@@ -44,6 +47,9 @@ public class ProductManagementController {
         categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
         brandColumn.setCellValueFactory(new PropertyValueFactory<>("brand"));
 
+        // Setup category filter
+        setupCategoryFilter();
+
         // Load products
         loadProducts();
 
@@ -56,11 +62,33 @@ public class ProductManagementController {
                 editButton.setDisable(newVal == null);
                 deleteButton.setDisable(newVal == null);
             });
+    }    private void setupCategoryFilter() {
+        ObservableList<Category> categories = FXCollections.observableArrayList(catalogueService.getAllCategories());
+        Category allCategory = new Category("All Categories");
+        categories.add(0, allCategory);
+        categoryFilterComboBox.setItems(categories);
+        categoryFilterComboBox.getSelectionModel().selectFirst();
     }
 
     private void loadProducts() {
         productList = FXCollections.observableArrayList(catalogueService.getAllProducts());
-        productTable.setItems(productList);
+        filteredProducts = new FilteredList<>(productList);
+        productTable.setItems(filteredProducts);
+    }
+
+    @FXML
+    private void handleCategoryFilter() {
+        Category selectedCategory = categoryFilterComboBox.getValue();
+        if (selectedCategory == null) return;
+
+        if (selectedCategory.getName().equals("All Categories")) {
+            filteredProducts.setPredicate(null); // Show all products
+        } else {
+            filteredProducts.setPredicate(product -> 
+                product.getCategory() != null && 
+                product.getCategory().getName().equals(selectedCategory.getName())
+            );
+        }
     }
 
     @FXML

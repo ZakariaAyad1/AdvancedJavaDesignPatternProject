@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/15.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="techstore.gui.controller.ClientDashboardController"
+           stylesheets="@../styles/dashboard.css">
+    
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="20" right="20" bottom="10" left="20"/>
+            </padding>
+            <Label fx:id="welcomeLabel" styleClass="welcome-text"/>
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true">
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="10" right="20" bottom="20" left="20"/>
+                </padding>
+
+                <!-- Statistics Cards -->
+                <HBox spacing="20" alignment="CENTER">
+                    <VBox styleClass="stat-card">
+                        <Label text="Total Orders" styleClass="stat-label"/>
+                        <Label fx:id="totalOrdersLabel" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card">
+                        <Label text="Cart Items" styleClass="stat-label"/>
+                        <Label fx:id="cartItemsLabel" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card">
+                        <Label text="Total Spent" styleClass="stat-label"/>
+                        <Label fx:id="totalSpentLabel" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Recent Orders -->
+                <VBox spacing="10">
+                    <Label text="Recent Orders" styleClass="section-header"/>
+                    <TableView fx:id="recentOrdersTable" prefHeight="200">
+                        <columns>
+                            <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="80"/>
+                            <TableColumn fx:id="orderDateColumn" text="Date" prefWidth="150"/>
+                            <TableColumn fx:id="orderTotalColumn" text="Total" prefWidth="100"/>
+                            <TableColumn fx:id="orderStatusColumn" text="Status" prefWidth="100"/>
+                        </columns>
+                    </TableView>
+                    <Button text="View All Orders" onAction="#handleViewAllOrders" styleClass="action-button"/>
+                </VBox>
+
+                <!-- Featured Products -->
+                <VBox spacing="10">
+                    <Label text="Featured Products" styleClass="section-header"/>
+                    <FlowPane fx:id="featuredProductsPane" hgap="10" vgap="10"/>
+                </VBox>
+
+                <!-- Quick Actions -->
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="Browse Products" onAction="#handleBrowseProducts" styleClass="action-button"/>
+                    <Button text="View Cart" onAction="#handleViewCart" styleClass="action-button"/>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>

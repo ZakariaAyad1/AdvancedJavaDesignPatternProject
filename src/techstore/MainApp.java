@@ -67,10 +67,9 @@ public class MainApp extends Application {
         catalogueManager.addCategory(laptops);
         catalogueManager.addCategory(smartphones);
 
-        techstore.patterns.factory.ProductFactory productFactory = new techstore.patterns.factory.ProductFactory();
-        Product laptop1 = productFactory.createProduct("ProBook X GUI", "Powerful Laptop", 1200.00, laptops, "TechBrand", 24, 0.1);
+        techstore.patterns.factory.ProductFactory productFactory = new techstore.patterns.factory.ProductFactory();        Product laptop1 = productFactory.createProduct("ProBook X GUI", "Powerful Laptop", 1200.00, laptops, "TechBrand", 24, 0.1, "laptops/probook.jpg");
         catalogueManager.addProduct(laptop1); // Direct add
-        Product phone1 = productFactory.createBasicProduct("Galaxy S25 GUI", 999.99, smartphones);
+        Product phone1 = productFactory.createProduct("Galaxy S25 GUI", "Flagship Smartphone", 999.99, smartphones, "Samsung", 12, 0.0, "phones/galaxy.jpg");
         catalogueManager.addProduct(phone1); // Direct add
     }
 
@@ -78,8 +77,15 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("TechStore");
+        
+        // Apply global stylesheet
+        String css = getClass().getResource("/techstore/resources/css/style.css").toExternalForm();
+        Application.setUserAgentStylesheet(null);
+        
         showLoginView();
+        
+        Scene scene = primaryStage.getScene();
+        scene.getStylesheets().add(css);
     }
 
     public void showLoginView() {
@@ -210,43 +216,6 @@ public class MainApp extends Application {
             }
         }
     }
-
-    // Modifier ViewAllOrdersController pour qu'il puisse ouvrir OrderDetailsDialog
-    // Dans ViewAllOrdersController.java, vous pourriez ajouter un bouton ou un double-clic sur la table
-    // pour appeler une méthode similaire à handleViewOrderDetails de MyOrdersController.
-    // Par exemple, dans ViewAllOrdersController.java :
-    /*
-    @FXML
-    private void initialize() { // S'il existe, sinon créez-le
-        ordersTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && ordersTable.getSelectionModel().getSelectedItem() != null) {
-                handleViewOrderDetails(ordersTable.getSelectionModel().getSelectedItem());
-            }
-        });
-    }
-
-    private void handleViewOrderDetails(Order selectedOrder) {
-        if (selectedOrder != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/OrderDetailsDialog.fxml"));
-                VBox page = loader.load();
-                Stage dialogStage = new Stage();
-                dialogStage.setTitle("Order Details - ID: " + selectedOrder.getId());
-                dialogStage.initModality(Modality.WINDOW_MODAL);
-                // dialogStage.initOwner(ownerStage); // Vous aurez besoin d'une référence au stage principal
-                Scene scene = new Scene(page);
-                dialogStage.setScene(scene);
-                OrderDetailsDialogController controller = loader.getController();
-                controller.setDialogStage(dialogStage);
-                controller.setOrder(selectedOrder);
-                dialogStage.showAndWait();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    */
-    // N'oubliez pas d'injecter ownerStage dans ViewAllOrdersController si vous l'utilisez pour initOwner.
 
     public static void main(String[] args) {
         launch(args);

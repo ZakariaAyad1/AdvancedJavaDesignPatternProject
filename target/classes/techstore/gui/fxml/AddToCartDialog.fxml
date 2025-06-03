@@ -20,9 +20,9 @@
     <Spinner fx:id="quantitySpinner" min="1" max="100" initialValue="1"/>
     
     <VBox spacing="5">
-        <CheckBox fx:id="giftWrapCheckBox" text="Add Gift Wrapping"/>
+        <CheckBox fx:id="giftWrapCheckBox" text="Add Gift Wrapping (5$)"/>
         
-        <CheckBox fx:id="warrantyCheckBox" text="Add Extended Warranty"/>
+        <CheckBox fx:id="warrantyCheckBox" text="Add Extended Warranty (20$ per year)"/>
         <HBox spacing="10" alignment="CENTER_LEFT">
             <Label text="Warranty Years:"/>
             <Spinner fx:id="warrantyYearsSpinner" min="1" max="5" initialValue="1"/>

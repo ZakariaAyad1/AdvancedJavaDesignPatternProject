@@ -32,8 +32,29 @@ public class ClientViewController {
         this.statusUpdater = statusUpdater;
 
         clientWelcomeLabel.setText("Welcome, " + currentClient.getUsername() + "!");
-        // Charger une vue par défaut, par exemple la vue des produits
-        handleViewProducts();
+        // Charger le tableau de bord par défaut
+        loadClientDashboard();
+    }
+
+    @FXML
+    private void handleViewDashboard() {
+        loadClientDashboard();
+    }
+
+    private void loadClientDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ClientDashboard.fxml"));
+            Parent dashboard = loader.load();
+
+            ClientDashboardController controller = loader.getController();
+            controller.initData(mainApp, currentClient, catalogueService, orderManager, statusUpdater);
+
+            clientContentArea.setCenter(dashboard);
+            statusUpdater.accept("Welcome to your dashboard!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            statusUpdater.accept("Error loading dashboard");
+        }
     }
 
     @FXML

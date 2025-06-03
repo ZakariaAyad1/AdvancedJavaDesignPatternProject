@@ -4,7 +4,6 @@ import techstore.patterns.decorator.ProductComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator; // For Iterator Pattern
 
 public class ShoppingCart {
     private final Client client;

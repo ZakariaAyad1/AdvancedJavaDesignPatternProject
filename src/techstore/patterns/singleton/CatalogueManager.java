@@ -1,6 +1,18 @@
 // This will also serve as the RealSubject for the Proxy pattern.
 // For simplicity, we'll make it a Singleton.
 // It can implement an interface if we want to hide its Singleton nature from clients.
+
+//CatalogueManager:
+//
+//Manages products and categories
+//
+//Implements CatalogueService interface for Proxy pattern
+//
+//Uses lazy initialization with synchronized getInstance()
+//
+//Provides product CRUD operations and category management
+
+
 package techstore.patterns.singleton;
 
 import techstore.model.Product;

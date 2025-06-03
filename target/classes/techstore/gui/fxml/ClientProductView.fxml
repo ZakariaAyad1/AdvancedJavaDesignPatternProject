@@ -5,30 +5,34 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.FlowPane?>
 
 <VBox xmlns="http://javafx.com/javafx/15.0.1"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="techstore.gui.controller.ClientProductViewController" 
       spacing="10.0" 
       prefHeight="500.0" 
-      prefWidth="750.0">
+      prefWidth="750.0"
+      stylesheets="@../../resources/css/product-card.css">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
-    <Label text="Available Products" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-    <TableView fx:id="productTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="idColumn" prefWidth="50.0" text="ID" />
-            <TableColumn fx:id="nameColumn" prefWidth="250.0" text="Name" />
-            <TableColumn fx:id="categoryColumn" prefWidth="150.0" text="Category" />
-            <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Price" />
-            <TableColumn fx:id="brandColumn" prefWidth="150.0" text="Brand" />
-        </columns>
-    </TableView>
-    <HBox spacing="10.0" alignment="CENTER_RIGHT">
-        <Button fx:id="detailsButton" onAction="#handleViewDetails" text="View Details" />
-        <Button fx:id="addToCartButton" onAction="#handleAddToCart" text="Add to Cart" />
+    <Label text="Available Products" style="-fx-font-size: 16px; -fx-font-weight: bold;" />    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Filter by Category:" />
+        <ComboBox fx:id="categoryFilterComboBox" prefWidth="200.0" onAction="#handleCategoryFilter" />
     </HBox>
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" styleClass="edge-to-edge">
+        <content>
+            <FlowPane fx:id="productGrid" hgap="15" vgap="15" alignment="CENTER_LEFT" 
+                      prefWrapLength="800">
+                <padding>
+                    <Insets top="15" right="15" bottom="15" left="15"/>
+                </padding>
+            </FlowPane>
+        </content>
+    </ScrollPane>
 </VBox>

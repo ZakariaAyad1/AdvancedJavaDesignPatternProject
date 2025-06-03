@@ -39,8 +39,7 @@ public class AppController {
         this.userManager.setNotificationService(this.notificationService);
         this.orderManager.setNotificationService(this.notificationService);
 
-        // Initial catalogue service (no user logged in, or a default read-only view)
-        // When a user logs in, this will be updated with a proxy specific to their role.
+
         this.catalogueService = new CatalogueServiceProxy(null); // Default to restricted access
 
         // Seed some data
@@ -62,15 +61,13 @@ public class AppController {
         // Note: For seeding, we might directly use CatalogueManager or ensure admin context for proxy
         CatalogueService adminCatalogueAccess = new CatalogueServiceProxy(admin);
 
-        techstore.patterns.factory.ProductFactory productFactory = new techstore.patterns.factory.ProductFactory();
-
-        Product laptop1 = productFactory.createProduct("ProBook X", "Powerful Laptop", 1200.00, laptops, "TechBrand", 24, 0.1);
+        techstore.patterns.factory.ProductFactory productFactory = new techstore.patterns.factory.ProductFactory();        Product laptop1 = productFactory.createProduct("ProBook X", "Powerful Laptop", 1200.00, laptops, "TechBrand", 24, 0.1, "products/probook.jpg");
         adminCatalogueAccess.addProduct(laptop1);
 
         Product phone1 = productFactory.createBasicProduct("Galaxy S25", 999.99, smartphones);
         adminCatalogueAccess.addProduct(phone1);
 
-        Product phone2 = productFactory.createProduct("Pixel 10", "AI Powered Phone", 899.00, smartphones, "Google", 12, 0.05);
+        Product phone2 = productFactory.createProduct("Pixel 10", "AI Powered Phone", 899.00, smartphones, "Google", 12, 0.05, "products/pixel10.jpg");
         adminCatalogueAccess.addProduct(phone2);
     }
 
@@ -120,10 +117,10 @@ public class AppController {
                 registerClient();
                 break;
             case 3:
-                currentUser = null; // Ensure exit condition for run() loop if it's checked there
+                currentUser = null;
                 view.displayMessage("Exiting application...");
-                System.exit(0); // Or set a flag to break the main loop
-                return; // Exit this menu
+                System.exit(0);
+                return;
             default:
                 view.displayMessage("Invalid choice. Please try again.");
         }

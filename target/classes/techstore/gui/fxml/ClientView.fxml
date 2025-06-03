@@ -14,6 +14,7 @@
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
             <Label text="Client Navigation" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+            <Button onAction="#handleViewDashboard" text="Dashboard" maxWidth="Infinity" styleClass="nav-button"/>
             <Button onAction="#handleViewProducts" text="View Products" maxWidth="Infinity"/>
             <Button onAction="#handleViewCart" text="View Shopping Cart" maxWidth="Infinity"/>
             <Button onAction="#handleViewMyOrders" text="My Order History" maxWidth="Infinity"/>

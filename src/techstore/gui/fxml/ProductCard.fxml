@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/15.0.1"
+      stylesheets="@../../resources/css/product-card.css"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="techstore.gui.controller.ProductCardController"
+      styleClass="product-card"
+      prefWidth="200"
+      spacing="5">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    
+    <ImageView fx:id="productImage" 
+               fitWidth="180" 
+               fitHeight="180" 
+               preserveRatio="true"/>
+               
+    <Label fx:id="nameLabel" 
+           styleClass="product-name" 
+           wrapText="true"/>
+           
+    <Label fx:id="priceLabel" 
+           styleClass="product-price"/>
+           
+    <Label fx:id="brandLabel" 
+           styleClass="product-brand"/>
+           
+    <HBox spacing="5" alignment="CENTER">
+        <Button text="Details" 
+                onAction="#handleViewDetails" 
+                styleClass="button-details"/>
+                
+        <Button text="Add to Cart" 
+                onAction="#handleAddToCart" 
+                styleClass="button-add-cart"/>
+    </HBox>
+</VBox>

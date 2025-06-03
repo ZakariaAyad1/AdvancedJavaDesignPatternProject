@@ -24,10 +24,14 @@ import java.io.IOException;
 
 public class MainController {
 
-    @FXML private BorderPane mainBorderPane;
-    @FXML private MenuBar menuBar;
-    @FXML private Label welcomeLabel;
-    @FXML private Label statusLabel;
+    @FXML
+    private BorderPane mainBorderPane;
+    @FXML
+    private MenuBar menuBar;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private Label statusLabel;
 
     private MainApp mainApp;
     private User currentUser;
@@ -36,58 +40,24 @@ public class MainController {
     private UserManager userManager;
 
 
-
     private void setupMenus() {
         menuBar.getMenus().removeIf(menu -> !"File".equals(menu.getText())); // Clear old role-specific menus
 
-        if (currentUser instanceof Admin) {
-            Menu adminMenu = new Menu("Admin");
-            MenuItem manageProductsItem = new MenuItem("Manage Products");
-            manageProductsItem.setOnAction(e -> loadProductManagementView());
-            MenuItem manageCategoriesItem = new MenuItem("Manage Categories");
-            // manageCategoriesItem.setOnAction(e -> loadCategoryManagementView()); // TODO
-            MenuItem viewOrdersItem = new MenuItem("View All Orders");
-            // viewOrdersItem.setOnAction(e -> loadAllOrdersView()); // TODO
-            MenuItem viewUsersItem = new MenuItem("View All Users");
-            // viewUsersItem.setOnAction(e -> loadAllUsersView()); // TODO
-            adminMenu.getItems().addAll(manageProductsItem, manageCategoriesItem, viewOrdersItem, viewUsersItem);
-            menuBar.getMenus().add(adminMenu);
-        } else if (currentUser instanceof Client) {
+        // Only add specific menus for clients, admin will use dashboard navigation
+        if (currentUser instanceof Client) {
             Menu clientMenu = new Menu("Client");
             MenuItem viewProductsItem = new MenuItem("View Products");
             viewProductsItem.setOnAction(e -> loadClientProductView());
             MenuItem viewCartItem = new MenuItem("View Cart");
             viewCartItem.setOnAction(e -> loadCartView());
             MenuItem viewMyOrdersItem = new MenuItem("My Orders");
-            // viewMyOrdersItem.setOnAction(e -> loadMyOrdersView()); // TODO
+            viewMyOrdersItem.setOnAction(e -> loadMyOrdersView());
             clientMenu.getItems().addAll(viewProductsItem, viewCartItem, viewMyOrdersItem);
             menuBar.getMenus().add(clientMenu);
         }
 
-        if (currentUser instanceof Admin) {
-            Menu adminMenu = new Menu("Admin");
-            MenuItem manageProductsItem = new MenuItem("Manage Products");
-            manageProductsItem.setOnAction(e -> loadProductManagementView());
-
-            MenuItem manageCategoriesItem = new MenuItem("Manage Categories"); // NOUVEAU
-            manageCategoriesItem.setOnAction(e -> loadCategoryManagementView()); // NOUVEAU
-
-            MenuItem viewOrdersItem = new MenuItem("View All Orders"); // NOUVEAU
-            viewOrdersItem.setOnAction(e -> loadAllOrdersView()); // NOUVEAU
-
-            MenuItem viewUsersItem = new MenuItem("View All Users"); // NOUVEAU
-            viewUsersItem.setOnAction(e -> loadAllUsersView()); // NOUVEAU
-
-            adminMenu.getItems().addAll(manageProductsItem, manageCategoriesItem, viewOrdersItem, viewUsersItem);
-            menuBar.getMenus().add(adminMenu);
-        } else if (currentUser instanceof Client) {
-            // ... (menu client existant)
-        }
-    }
-
-    private void loadAdminDashboard() {
-        // Pour l'instant, chargeons directement la gestion des produits
-        loadProductManagementView();
+        // For admin, all navigation will be through the dashboard buttons
+        // Only keep the File menu with Logout/Exit options
     }
 
     private void loadProductManagementView() {
@@ -122,7 +92,7 @@ public class MainController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/CartView.fxml"));
                 Parent cartNode = loader.load();
                 CartController controller = loader.getController();
-                controller.initData((Client)currentUser, orderManager, mainApp.getPrimaryStage(), this::updateStatus);
+                controller.initData((Client) currentUser, orderManager, mainApp.getPrimaryStage(), this::updateStatus);
                 mainBorderPane.setCenter(cartNode);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -148,7 +118,6 @@ public class MainController {
     private void handleExit() {
         mainApp.getPrimaryStage().close();
     }
-
 
 
     // NOUVELLES MÉTHODES DE CHARGEMENT DE VUE DANS MainController.java:
@@ -192,19 +161,19 @@ public class MainController {
             updateStatus("Error loading all users view.");
         }
     }
-    
-    
+
+
     public void setMainApp(MainApp mainApp, User user, CatalogueService catalogueService, OrderManager orderManager, UserManager userManager) {
         this.mainApp = mainApp;
         this.currentUser = user;
         this.catalogueService = catalogueService;
         this.orderManager = orderManager;
-        this.userManager = userManager; // Assurez-vous que userManager est bien passé et stocké si besoin dans les dashboards
+        this.userManager = userManager;
 
         welcomeLabel.setText("Welcome, " + currentUser.getUsername() + "!");
-        setupMenus(); // Les menus du MainController peuvent rester pour Logout/Exit
+        setupMenus();
 
-        // Charger le dashboard approprié en fonction du rôle de l'utilisateur
+        // Load the appropriate dashboard based on user role
         if (currentUser instanceof Admin) {
             loadAdminDashboardView();
         } else if (currentUser instanceof Client) {
@@ -233,7 +202,7 @@ public class MainController {
     }
 
     private void loadClientDashboardView() {
-         try {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/ClientView.fxml")); // Ou ClientDashboard.fxml si vous le renommez
             Parent clientDashboardNode = loader.load();
             ClientViewController controller = loader.getController();
@@ -247,11 +216,19 @@ public class MainController {
         }
     }
 
-    // Les anciennes méthodes comme loadProductManagementView, loadClientProductView, etc.
-    // NE SONT PLUS APPELÉES DIRECTEMENT PAR MainController. Elles sont maintenant appelées
-    // par AdminDashboardController ou ClientViewController.
-    // Vous pouvez les supprimer de MainController si elles ne sont plus utilisées ailleurs.
-
-
-
+    private void loadMyOrdersView() {
+        if (currentUser instanceof Client) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/techstore/gui/fxml/MyOrdersView.fxml"));
+                Parent ordersNode = loader.load();
+                MyOrdersController controller = loader.getController();
+                controller.initData((Client) currentUser, orderManager, mainApp.getPrimaryStage());
+                mainBorderPane.setCenter(ordersNode);
+                updateStatus("My Orders view loaded.");
+            } catch (IOException e) {
+                e.printStackTrace();
+                updateStatus("Error loading my orders view.");
+            }
+        }
+    }
 }
