@@ -3,7 +3,7 @@ TechStore is a Java  demo showcasing twelve design patterns through functionalit
 
 # TechStore - Application Console Java de Gestion de Produits
 
-![Java Version](https://img.shields.io/badge/Java-8+-blue.svg)
+![Java Version](https://img.shields.io/badge/Java--blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg) <!-- Ou la licence de votre choix -->
 ![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen) <!-- Mettez à jour manuellement ou via CI -->
 
