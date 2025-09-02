@@ -15,7 +15,7 @@ Ce projet sert d'exemple pratique pour les développeurs et étudiants souhaitan
 
 ## Fonctionnalités
 
-### Client
+### the Client
 
 *   ✅ Inscription et Connexion
 *   ✅ Consultation du catalogue de produits
